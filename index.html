@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Happy Birthday — My Sunshine</title>
+<style>
+  :root{
+    --bg1: #fff0f4;
+    --bg2: #ffeef6;
+    --card:#ffffffcc;
+    --accent:#ff7aa2;
+    --accent-2:#ffd6ea;
+    --text:#31162b;
+  }
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg,var(--bg1),var(--bg2)); color:var(--text); -webkit-font-smoothing:antialiased;}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+  .card{width:100%;max-width:720px;background:linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.6)); border-radius:20px; padding:22px; box-shadow: 0 12px 40px rgba(255,122,160,0.12); text-align:center;}
+  h1{margin:0 0 8px;font-size:20px;font-weight:700;color:var(--accent-2);}
+  .scene{position:relative; width:100%; height:420px; max-height:64vh; display:flex; align-items:center; justify-content:center; margin:14px 0 10px;}
+  .cake{
+    width:320px; max-width:72%; position:relative; border-radius:20px; background: linear-gradient(180deg,#ffd7e8,#ffbcd6); padding:34px 20px; box-shadow:0 10px 30px rgba(199,70,115,0.12); transform-origin:center bottom;
+  }
+  .frosting{height:22px; background:linear-gradient(90deg,#fff8fb,#fff1f6); border-radius:14px; margin-bottom:12px; box-shadow:inset 0 -4px 8px rgba(255,255,255,0.6);}
+  .candlestick{position:absolute; top:-46px; left:50%; transform:translateX(-50%); display:flex; align-items:flex-end; gap:6px;}
+  .candle{width:14px; height:64px; background:linear-gradient(180deg,#ffffff,#ffe6ee); border-radius:8px; position:relative; box-shadow:0 6px 18px rgba(0,0,0,0.12);}
+  .wick{width:2px;height:8px;background:#4a2f34;position:absolute;left:50%;transform:translateX(-50%);top:-8px;border-radius:1px;}
+  .flame{position:absolute; left:50%; transform:translateX(-50%); top:-34px; width:22px; height:34px; pointer-events:none;}
+  .flame-inner, .flame-outer{ position:absolute; left:50%; transform:translateX(-50%); border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; animation: flicker 700ms infinite; }
+  .flame-outer{width:22px;height:34px;background:linear-gradient(180deg,#ffd77a,#ff8a5a); filter:blur(.6px); animation-duration:750ms;}
+  .flame-inner{width:12px;height:20px; top:8px;background:linear-gradient(180deg,#fff8b8,#ff5a3a); animation-duration:620ms;}
+  @keyframes flicker{ 0%{transform: translateX(-50%) translateY(0) scale(1);} 50%{transform: translateX(-50%) translateY(-2px) scale(0.98);} 100%{transform: translateX(-50%) translateY(0) scale(1);} }
+
+  /* puff smoke */
+  .smoke{position:absolute; left:50%; top:-38px; transform:translateX(-50%); pointer-events:none; width:160px; height:110px; overflow:visible;}
+  .smoke .p{position:absolute; border-radius:50%; background:rgba(150,110,130,0.06); filter:blur(2px); opacity:0; transform-origin:center; }
+
+  .message{
+    font-size:30px; font-weight:800; margin-top:12px; color:#81304a;
+    text-shadow: 0 8px 28px rgba(255,140,160,0.07); opacity:0; transform:translateY(12px) scale(.98); transition:all 520ms cubic-bezier(.2,.9,.2,1); line-height:1.1;
+  }
+  .message.show{opacity:1; transform:translateY(0) scale(1);}
+
+  .sparkle { position:absolute; pointer-events:none; }
+
+  .controls{display:flex; gap:10px; margin-top:12px; justify-content:center; align-items:center; flex-wrap:wrap;}
+  .hint{font-size:13px;color:#6b3746; opacity:0.85;}
+  .btn{padding:10px 14px;border-radius:12px;border:0;background:linear-gradient(90deg,#ff9fb6,#ff6b94); color:#2a0b13;font-weight:700;cursor:pointer; box-shadow:0 8px 24px rgba(255,122,160,0.12);}
+
+  /* responsive */
+  @media (max-width:480px){
+    .scene{height:380px}
+    .message{font-size:22px}
+    .cake{width:82%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" role="main" aria-label="Birthday cake scene">
+    <h1>Make a wish ✨</h1>
+
+    <div class="scene" id="scene">
+      <div class="candlestick" id="candlestick" aria-hidden="true">
+        <div class="candle" id="candle">
+          <div class="wick" id="wick"></div>
+          <div class="flame" id="flame">
+            <div class="flame-outer"></div>
+            <div class="flame-inner"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cake" id="cake" aria-hidden="true">
+        <div class="frosting"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.7);"></div>
+          <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.7);"></div>
+          <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.7);"></div>
+        </div>
+      </div>
+
+      <div class="smoke" id="smoke" aria-hidden="true"></div>
+      <div id="sparkles" class="sparkle" aria-hidden="true"></div>
+    </div>
+
+    <div class="controls">
+      <div class="hint">Shake your phone or tap the cake to blow the candle.</div>
+      <button class="btn" id="blowBtn">Blow Candle</button>
+      <button class="btn" id="resetBtn" style="background:linear-gradient(90deg,#bcdfff,#8fb6ff);">Reset</button>
+    </div>
+
+    <div class="message" id="message" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+/* ---------------------------
+  Audio: synth piano + puff noise using WebAudio
+   - No external files — everything generates via WebAudio.
+   - Audio will only start after a user gesture (blow action).
+   --------------------------- */
+(function(){
+  // UI elements
+  const flame = document.getElementById('flame');
+  const wick  = document.getElementById('wick');
+  const blowBtn = document.getElementById('blowBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const messageEl = document.getElementById('message');
+  const smokeContainer = document.getElementById('smoke');
+  const sparkles = document.getElementById('sparkles');
+  const scene = document.getElementById('scene');
+
+  const FINAL_MESSAGE = "Happy Birthday, 🎂\nMy Sunshine ☀️💕";
+
+  // show input text if from URL (not required but supported)
+  function getInitialText(){
+    try{
+      const q = new URLSearchParams(location.search);
+      if(q.get('text')) return decodeURIComponent(q.get('text'));
+      if(q.get('name')) return "Happy Birthday, " + decodeURIComponent(q.get('name'));
+    }catch(e){}
+    return FINAL_MESSAGE;
+  }
+  const initialText = getInitialText();
+
+  // show message (support newline -> <br>)
+  function showMessage(txt){
+    messageEl.innerHTML = txt.replace(/\n/g, '<br>');
+    messageEl.classList.add('show');
+    // create gentle glow and scaling
+    messageEl.animate([
+      { transform: 'translateY(12px) scale(.98)', opacity: 0 },
+      { transform: 'translateY(0) scale(1.02)', opacity: 1 }
+    ], { duration: 600, easing: 'cubic-bezier(.2,.9,.2,1)'});
+  }
+  function hideMessage(){ messageEl.classList.remove('show'); messageEl.innerHTML = ''; }
+
+  // confetti-like sparkles (pink)
+  function makeSparkles(){
+    sparkles.innerHTML = '';
+    const count = 18;
+    const w = scene.clientWidth, h = scene.clientHeight;
+    for(let i=0;i<count;i++){
+      const el = document.createElement('div');
+      el.style.position = 'absolute';
+      el.style.left = (w/2 + (Math.random()-0.5)*160) + 'px';
+      el.style.top = (h/2 + (Math.random()-0.5)*40) + 'px';
+      const size = 6 + Math.random()*10;
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.borderRadius = '50%';
+      el.style.background = ['#ffd6ea','#ffc1dd','#ff9fb6'][Math.floor(Math.random()*3)];
+      el.style.opacity = '0';
+      sparkles.appendChild(el);
+      const dx = (Math.random()-0.5)*220;
+      const dy = -120 - Math.random()*120;
+      el.animate([
+        { transform: 'translateY(0) scale(0.6)', opacity:1 },
+        { transform: `translate(${dx}px, ${dy}px) scale(1)`, opacity:0 }
+      ], { duration: 1200 + Math.random()*800, easing: 'cubic-bezier(.2,.9,.2,1)'});
+      setTimeout(()=> el.remove(), 2400);
+    }
+  }
+
+  // Smoke/puff animation
+  function puffAnimation(){
+    smokeContainer.innerHTML = '';
+    const baseLeft = smokeContainer.clientWidth/2;
+    for(let i=0;i<6;i++){
+      const p = document.createElement('div');
+      p.className = 'p';
+      const size = 18 + i*8 + Math.random()*10;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = (50 + (Math.random()-0.5)*18) + '%';
+      p.style.top = (20 + Math.random()*10) + 'px';
+      p.style.opacity = '0';
+      p.style.background = 'radial-gradient(circle at 40% 30%, rgba(255,255,255,0.9), rgba(200,150,170,0.12))';
+      smokeContainer.appendChild(p);
+      // animate
+      const dx = (Math.random()-0.5)*60;
+      const dy = -60 - Math.random()*80;
+      p.animate([
+        { transform: 'translateY(0) scale(.6)', opacity: 0.95 },
+        { transform: `translate(${dx}px, ${dy}px) scale(1.2)`, opacity: 0.0 }
+      ], { duration: 1000 + i*140, easing: 'cubic-bezier(.2,.9,.2,1)'});
+      setTimeout(()=> p.remove(), 1400 + i*180);
+    }
+  }
+
+  // audio: WebAudio context created lazily on user gesture
+  let audioCtx = null;
+  function ensureAudio(){
+    if(audioCtx) return audioCtx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    audioCtx = new AC();
+    return audioCtx;
+  }
+
+  // puff sound: short filtered noise burst
+  function playPuff(){
+    const ac = ensureAudio();
+    if(!ac) return;
+    const buf = ac.createBuffer(1, ac.sampleRate*0.5, ac.sampleRate);
+    const data = buf.getChannelData(0);
+    for(let i=0;i<data.length;i++){
+      // pink-ish noise style
+      data[i] = (Math.random()*2-1) * Math.exp(-i/(ac.sampleRate*0.12));
+    }
+    const src = ac.createBufferSource();
+    src.buffer = buf;
+    const bp = ac.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 1200;
+    bp.Q.value = 0.8;
+    const gain = ac.createGain();
+    gain.gain.value = 0.0;
+    src.connect(bp);
+    bp.connect(gain);
+    gain.connect(ac.destination);
+    // envelope
+    const now = ac.currentTime;
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(0.0, now);
+    gain.gain.linearRampToValueAtTime(0.6, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+    src.start(now);
+    src.stop(now + 0.7);
+  }
+
+  // gentle piano-like sequence: simple pluck using sine + slight detune for warmth
+  function playGentleMelody(){
+    const ac = ensureAudio();
+    if(!ac) return;
+    // notes (MIDI-ish frequencies) for a short calm motif
+    const notes = [ 392, 440, 494, 523, 440, 392 ]; // G4 A4 B4 C5 A4 G4
+    const now = ac.currentTime + 0.05;
+    const bpm = 60;
+    const beat = 60 / bpm;
+    let t = now;
+    for(let i=0;i<notes.length;i++){
+      pianoPluck(ac, notes[i], t, 0.9 + (i%2)*0.2);
+      t += beat * (0.9 + Math.random()*0.2);
+    }
+    // gentle pad under
+    playAmbientPad(ac, now + 0.05, 2.6);
+  }
+
+  function pianoPluck(ac, freq, startTime, duration=0.9){
+    // carrier oscillator
+    const osc = ac.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    // small detune oscillator for body
+    const osc2 = ac.createOscillator();
+    osc2.type = 'triangle';
+    osc2.frequency.value = freq * 0.997; // slight detune
+
+    const gain = ac.createGain();
+    gain.gain.value = 0;
+    // tone shaping filter
+    const filter = ac.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 4200;
+    filter.Q.value = 0.4;
+
+    osc.connect(gain);
+    osc2.connect(gain);
+    gain.connect(filter);
+    filter.connect(ac.destination);
+
+    // Envelope: quick attack, medium decay, small sustain
+    const a = 0.002, d = 0.36, s = 0.28;
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.9, startTime + a);
+    gain.gain.exponentialRampToValueAtTime(0.6 * s, startTime + a + d);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+    // small filter movement for realism
+    filter.frequency.setValueAtTime(2600, startTime);
+    filter.frequency.linearRampToValueAtTime(1800, startTime + duration*0.6);
+
+    osc.start(startTime);
+    osc2.start(startTime);
+    osc.stop(startTime + duration + 0.05);
+    osc2.stop(startTime + duration + 0.05);
+  }
+
+  function playAmbientPad(ac, start, duration){
+    const osc = ac.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 220; // A3 base
+    const gain = ac.createGain();
+    gain.gain.value = 0;
+    const filter = ac.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 800;
+    osc.connect(gain);
+    gain.connect(filter);
+    filter.connect(ac.destination);
+
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(0.18, start + 0.6);
+    gain.gain.linearRampToValueAtTime(0.05, start + duration - 0.6);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration + 0.2);
+
+    osc.start(start);
+    osc.stop(start + duration + 0.3);
+  }
+
+  // state and visual blow
+  let blown = false;
+  function blowSequence(){
+    if(blown) return;
+    blown = true;
+
+    // flame vanish animation
+    flame.style.transition = 'transform 420ms ease, opacity 420ms ease';
+    flame.style.transform = 'translateY(-12px) scale(.6)';
+    flame.style.opacity = '0';
+    wick.style.transition = 'opacity 420ms';
+    wick.style.opacity = '0.6';
+
+    // smoke + puff visuals
+    puffAnimation();
+
+    // play puff sound
+    playPuff();
+
+    // start melody after a small delay
+    setTimeout(()=> {
+      // ensure audio context resumed by gesture
+      const ac = ensureAudio();
+      if(ac && ac.state === 'suspended' && typeof ac.resume === 'function'){
+        ac.resume().catch(()=>{});
+      }
+      playGentleMelody();
+    }, 260);
+
+    // show sparkles and message
+    setTimeout(()=> {
+      makeSparkles();
+      showMessage(initialText);
+    }, 320);
+  }
+
+  function resetScene(){
+    blown = false;
+    flame.style.transition = 'none';
+    flame.style.transform = '';
+    flame.style.opacity = '1';
+    wick.style.opacity = '1';
+    hideMessage();
+    smokeContainer.innerHTML = '';
+    sparkles.innerHTML = '';
+  }
+
+  // event listeners: click / tap on cake or button
+  blowBtn.addEventListener('click', ()=> blowSequence());
+  resetBtn.addEventListener('click', resetScene);
+  document.getElementById('cake').addEventListener('click', ()=> blowSequence());
+  flame.addEventListener('click', ()=> blowSequence());
+
+  // keyboard fallback (space)
+  window.addEventListener('keydown', (e)=> { if(e.code === 'Space'){ e.preventDefault(); blowSequence(); }});
+
+  // Shake detection (simple)
+  (function setupShake(){
+    let lastTime = 0;
+    let lastX = null, lastY = null, lastZ = null;
+    let shakeCount = 0;
+    const SHAKE_THRESHOLD = 14; // tune: lower = more sensitive
+    const SHAKE_REQUIRED = 2;
+    function motionHandler(e){
+      const acc = e.accelerationIncludingGravity || e.acceleration || {};
+      const curTime = Date.now();
+      if((curTime - lastTime) < 120) return;
+      lastTime = curTime;
+      const x = acc.x || 0; const y = acc.y || 0; const z = acc.z || 0;
+      if(lastX === null){ lastX = x; lastY = y; lastZ = z; return; }
+      const dx = x - lastX; const dy = y - lastY; const dz = z - lastZ;
+      const delta = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      lastX = x; lastY = y; lastZ = z;
+      if(delta > SHAKE_THRESHOLD) shakeCount++; else shakeCount = Math.max(0, shakeCount - 0.5);
+      if(shakeCount >= SHAKE_REQUIRED){
+        blowSequence();
+        shakeCount = 0;
+      }
+    }
+    // iOS permission handling
+    if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+      // request on first tap/click (gesture)
+      const ask = ()=> {
+        DeviceMotionEvent.requestPermission().catch(()=>{}).then(()=>{});
+        window.removeEventListener('click', ask);
+        window.removeEventListener('touchstart', ask);
+      };
+      window.addEventListener('click', ask, {once:true});
+      window.addEventListener('touchstart', ask, {once:true});
+    }
+    if('ondevicemotion' in window){
+      window.addEventListener('devicemotion', motionHandler, false);
+    }
+  })();
+
+  // accessibility: announce message when shown (aria-live already set)
+  // prevent autoplay until gesture: we create audio context lazily on first blow/interaction
+
+  // set initial small breathing glow on flame
+  (function flameBreath(){
+    let t = 0;
+    setInterval(()=> {
+      if(blown) return;
+      const s = 1 + Math.sin(t)*0.02;
+      flame.style.transform = `translateX(-50%) translateY(${Math.sin(t)*0.8}px) scale(${s})`;
+      t += 0.09;
+    }, 40);
+  })();
+
+  // initial text may be set in message only after blow; keep input stored
+  // done
+})();
+</script>
+</body>
+</html>
